@@ -489,7 +489,7 @@ sub parse_date_only
 			    October|Oct|November|Nov|December|Dec)
 			\s+
 			(\d+)
-			(?:st|nd|rd|th)
+			(?:st|nd|rd|th)?
 			\,?
 			(?: 
 				\s+
@@ -641,7 +641,7 @@ sub parse_time_only
 			)
 			(?:
 				\s+
-				" ?
+				"?
 				(				(?# ${11})
 					(?: [A-Z]{1,4}[TCW56] )
 					|
@@ -835,7 +835,11 @@ sub parse_date_offset
 			\s*
 			(day|week|month|year)s?
 			##) {
-		&calc($rsr, $yr, $mr, $dr, $rdr, $now, $3, "$1$2", %options);
+		my ($one, $two) = ($1, $2);
+		$one = '' unless defined $one;
+		$two = '' unless defined $two;
+		&calc($rsr, $yr, $mr, $dr, $rdr, $now, $3, 
+			"$one$two", %options);
 		printf "matched at %d.\n", __LINE__ if $debug;
 		return 1;
 	} elsif ($$tr =~ s#^(?xi)

@@ -25,6 +25,9 @@ installed as part of the installation process.
 
 Release notes:
 
+97.092101:
+	Fix a 5.004 warning.
+	Add support for "June 4, 1997"
 96.110801:
 	Added support for negative relative times.
 	Bugfix: "now" by itself was ignored.
