@@ -16,7 +16,7 @@ use strict;
 # constants
 use vars qw(%mtable %umult %wdays $VERSION);
 
-$VERSION = 99.11_17_01;
+$VERSION = 100.01_03_01;
 
 # globals
 use vars qw($debug); 
@@ -522,11 +522,11 @@ sub parse_date_only
 				\s+
 			)?
 			(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\.?
-			(\s+ | - | \. | /)
+			((\s)+ | - | \. | /)
 				
 			(\d\d?)
 			(?:
-				\2
+				(?: \2|\3+)
 				(\d\d (?: \d\d)?)
 			)?
 			(?:
@@ -536,8 +536,8 @@ sub parse_date_only
 			)
 			##) {
 		# [Dow,] Mon dd [yyyy]
-		($$yr, $$mr, $$dr) = ($4, $mtable{"\u\L$1"}, $3);
-		printf "%d: %s - %s - %s\n", __LINE__, $1, $2, $3 if $debug;
+		($$yr, $$mr, $$dr) = ($5, $mtable{"\u\L$1"}, $4);
+		printf "%d: %s - %s - %s\n", __LINE__, $1, $2, $4 if $debug;
 		print "y undef\n" if ($debug && ! defined($$yr));
 		return 1;
 	} elsif ($$tr =~ s#^(?xi)

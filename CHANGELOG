@@ -1,3 +1,7 @@
+100.010301:
+	W. Phillip Moore <Phil.Moore@msdw.com> reproted a Y2K bug: it could
+	not parse 'Jan  1 2000 10:30:30AM'.  Fixed.  This is embarassing
+	beasue <alangmead@boston.com> sent in a patch Dec 9th!
 99.111701:
 	Allen Smith <easmith@beatrice.rutgers.edu> noticed that VALIDATE
 	wouldn't accept hours > 0...  
