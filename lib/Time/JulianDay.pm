@@ -26,7 +26,6 @@ sub julian_day
 {
     my($year, $month, $day) = @_;
     my($tmp);
-    my($secs);
 
     use Carp;
 #    confess() unless defined $day;

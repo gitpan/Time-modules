@@ -16,7 +16,7 @@ use strict;
 # constants
 use vars qw(%mtable %umult %wdays $VERSION);
 
-$VERSION = 100.01_03_01;
+$VERSION = 101.06_21_01;
 
 # globals
 use vars qw($debug); 
@@ -165,8 +165,9 @@ sub parsedate
 			}
 			last;
 		} continue {
-			print "context$parse remaider = $t.\n" if $debug;
 			$passes++;
+			&debug_display($tz, $tzo, $H, $M, $S, $m, $d, $y, $rs, $rd, $rel, $passes, $parse, $t) if $debug;
+
 		}
 
 		if ($passes == 0) {
@@ -177,32 +178,18 @@ sub parsedate
 		}
 	}
 
-	if ($debug) {
-		print "t: $t.\n";
-		print defined($tz) ? "tz: $tz.\n" : "no tz\n";
-		print defined($tzo) ? "tzo: $tzo.\n" : "no tzo\n";
-		print "HMS: ";
-		print defined($H) ? "$H, " : "no H, ";
-		print defined($M) ? "$M, " : "no M, ";
-		print defined($S) ? "$S\n" : "no S.\n";
-		print "mdy: ";
-		print defined($m) ? "$m, " : "no m, ";
-		print defined($d) ? "$d, " : "no d, ";
-		print defined($y) ? "$y\n" : "no y.\n";
-		print defined($rs) ? "rs: $rs.\n" : "no rs\n";
-		print defined($rd) ? "rd: $rd.\n" : "no rd\n";
-		print "parse:$parse\n";
-		print "passes: $passes\n";
-	}
+	&debug_display($tz, $tzo, $H, $M, $S, $m, $d, $y, $rs, $rd, $rel, $passes, $parse, $t) if $debug;
 
 	$t =~ s/^\s+//;
 
 	if ($t ne '') {
 		# we didn't manage to eat the string
 		print "NOT WHOLE\n" if $debug;
-		return undef if $options{WHOLE};
-		return (undef, "characters left over after parse")
-			if wantarray();
+		if ($options{WHOLE}) {
+			return (undef, "characters left over after parse")
+				if wantarray();
+			return undef 
+		}
 	}
 
 	# define a date if there isn't one already
@@ -211,9 +198,11 @@ sub parsedate
 		print "no date defined, trying to find one." if $debug;
 		if (defined $rs or defined $H) {
 			# we do have a time.
-			return (undef, "no date specified")
-				if wantarray();
-			return undef if $options{DATE_REQUIRED};
+			if ($options{DATE_REQUIRED}) {
+				return (undef, "no date specified")
+					if wantarray();
+				return undef;
+			}
 			if (defined $rs) {
 				print "simple offset: $rs\n" if $debug;
 				my $rv = $now + $rs;
@@ -494,7 +483,9 @@ sub parse_date_only
 		return 1;
 	} elsif ($$tr =~ s#^(?xi)
 			(?:
-				(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?
+				(?:Mon|Monday|Tue|Tuesday|Wed|Wednesday|
+					Thu|Thursday|Fri|Friday|
+					Sat|Saturday|Sun|Sunday),?
 				\s+
 			)?
 			(\d\d?)
@@ -518,7 +509,9 @@ sub parse_date_only
 		return 1;
 	} elsif ($$tr =~ s#^(?xi)
 			(?:
-				(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?
+				(?:Mon|Monday|Tue|Tuesday|Wed|Wednesday|
+					Thu|Thursday|Fri|Friday|
+					Sat|Saturday|Sun|Sunday),?
 				\s+
 			)?
 			(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\.?
@@ -711,7 +704,7 @@ sub parse_time_only
 				)	
 			)?
 			(?:
-				\s+
+				\s*
 			|
 				$
 			)
@@ -762,6 +755,10 @@ sub parse_time_offset
 			(\d+)
 			\s*
 			(sec|second|min|minute|hour)s?
+			(
+				\s+
+				ago
+			)?
 			(?:
 				\s+
 				|
@@ -771,6 +768,9 @@ sub parse_time_offset
 		# count units
 		$$rsr = 0 unless defined $$rsr;
 		$$rsr += $umult{"\L$3"} * "$1$2";
+
+		$$rsr = -$$rsr if $4 ||
+			$$tr =~ /\b(day|mon|month|year)s?\s*ago\b/;
 		printf "matched at %d.\n", __LINE__ if $debug;
 		return 1;
 	} 
@@ -810,7 +810,7 @@ sub expand_two_digit_year
 		}
 	} elsif ($options{PREFER_FUTURE}) {
 		# being strict here would be silly
-		if ($yr < $within+10) {
+		if ($yr < $within-10) {
 			# it's 2019 and the date is '08'
 			$r = $yr + $century + 100;
 		}
@@ -837,7 +837,9 @@ sub calc
 {
 	my ($rsr, $yr, $mr, $dr, $rdr, $now, $units, $count, %options) = @_;
 
+	confess unless $units;
 	$units = "\L$units";
+	print "calc based on $units\n" if $debug;
 
 	if ($units eq 'day') {
 		$$rdr = $count;
@@ -946,6 +948,29 @@ sub parse_date_offset
 	$$tr =~ s#^\s+##;
 
 	if ($$tr =~ s#^(?xi)
+			\s*
+			(\d+)
+			\s*
+			(day|week|month|year)s?
+			(
+				\s+
+				ago
+			)?
+			(?:
+				\s+
+				|
+				$
+			)
+			##) {
+		my $amt = $1 + 0;
+		my $units = $2;
+		$amt = -$amt if $3 ||
+			$$tr =~ m#\b(sec|second|min|minute|hour)s?\s*ago\b#;
+		&calc($rsr, $yr, $mr, $dr, $rdr, $now, $units, 
+			$amt, %options);
+		printf "matched at %d.\n", __LINE__ if $debug;
+		return 1;
+	} elsif ($$tr =~ s#^(?xi)
 			(?:
 				(?:
 					now
@@ -957,12 +982,17 @@ sub parse_date_offset
 			(\d+)
 			\s*
 			(day|week|month|year)s?
+			(?:
+				\s+
+				|
+				$
+			)
 			##) {
-		my ($one, $two) = ($1, $2);
-		$one = '' unless defined $one;
-		$two = '' unless defined $two;
+		my $one = $1 || '';
+		my $two = $2 || '';
+		my $amt = "$one$two"+0;
 		&calc($rsr, $yr, $mr, $dr, $rdr, $now, $3, 
-			"$one$two", %options);
+			$amt, %options);
 		printf "matched at %d.\n", __LINE__ if $debug;
 		return 1;
 	} elsif ($$tr =~ s#^(?xi)
@@ -1046,6 +1076,28 @@ sub parse_date_offset
 	return 0;
 }
 
+sub debug_display
+{
+	my ($tz, $tzo, $H, $M, $S, $m, $d, $y, $rs, $rd, $rel, $passes, $parse, $t) = @_;
+	print "---------<<\n";
+	print defined($tz) ? "tz: $tz.\n" : "no tz\n";
+	print defined($tzo) ? "tzo: $tzo.\n" : "no tzo\n";
+	print "HMS: ";
+	print defined($H) ? "$H, " : "no H, ";
+	print defined($M) ? "$M, " : "no M, ";
+	print defined($S) ? "$S\n" : "no S.\n";
+	print "mdy: ";
+	print defined($m) ? "$m, " : "no m, ";
+	print defined($d) ? "$d, " : "no d, ";
+	print defined($y) ? "$y\n" : "no y.\n";
+	print defined($rs) ? "rs: $rs.\n" : "no rs\n";
+	print defined($rd) ? "rd: $rd.\n" : "no rd\n";
+	print $rel ? "relative\n" : "not relative\n";
+	print "passes: $passes\n";
+	print "parse:$parse\n";
+	print "t: $t.\n";
+	print "--------->>\n";
+}
 1;
 
 __DATA__
@@ -1122,6 +1174,7 @@ Date parsing can also use options.  The options are as follows:
 	"now" "-" count units
 	"+" count units
 	"-" count units
+	count units "ago"
 
 =head2 Absolute time formats:
 
@@ -1142,6 +1195,7 @@ Date parsing can also use options.  The options are as follows:
 	"+" count
 	"-" count units
 	"-" count
+	count units "ago"
 
 =head2 Timezone formats:
 
