@@ -9,9 +9,6 @@ $debug = 0;
 
 $Time::ParseDate::debug = $debug;
 
-use vars qw($VERSION);
-$VERSION = 96.10_02_01;
-
 BEGIN { 
 	$okat = 12;
 	$ENV{'LANG'} = 'C';

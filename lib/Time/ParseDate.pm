@@ -17,7 +17,7 @@ use integer;
 # constants
 use vars qw(%mtable %umult %wdays $VERSION);
 
-$VERSION = 98.11_28_01;
+$VERSION = 98.11_29_01;
 
 # globals
 use vars qw($debug); 
@@ -703,10 +703,8 @@ sub parse_time_offset
 	return 0 if $options{NO_RELATIVE};
 
 	if ($$tr =~ s#^(?xi)
-			(?:
-				(\+ | \-)
-				\s*
-			)?
+			([-+]?)
+			\s*
 			(\d+)
 			\s*
 			(sec|second|min|minute|hour)s?

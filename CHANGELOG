@@ -1,4 +1,7 @@
 
+98.112901:
+	Slight change to avoid an "Use of uninitialized value" error
+	pointed out by Mike Coffin <mhc@Eng.Sun.COM>.
 98.112801:
 	It turns out that Sybase emits time values like "3:09:59:000PM".  The
 	last three digits are milliseconds.  Such times are now recognized
