@@ -15,7 +15,7 @@ use strict;
 use vars qw(@DoW @DayOfWeek @MoY @MonthOfYear %strftime_conversion $VERSION);
 use vars qw($template $sec $min $hour $mday $mon $year $wday $yday $isdst);
 
-$VERSION = 98.06_09_01;
+$VERSION = 98.06_09_02;
 
 CONFIG: {
     @DoW = 	   qw(Sun Mon Tue Wed Thu Fri Sat);
@@ -31,9 +31,9 @@ CONFIG: {
 	'b',	sub { $MoY[$mon] },
 	'B',	sub { $MonthOfYear[$mon] },
 	'c',	sub { asctime_n($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst, "") },
-	'd',	sub { sprintf("%2d", $mday); },
+	'd',	sub { sprintf("%02d", $mday); },
 	'D',	sub { sprintf("%02d/%02d/%02d", $mon+1, $mday, $year%100) },
-	'e',	sub { sprintf("%02d", $mday); },
+	'e',	sub { sprintf("%2d", $mday); },
 	'h',	sub { $MoY[$mon] },
 	'H',	sub { sprintf("%02d", $hour) },
 	'I',	sub { sprintf("%02d", $hour % 12 || 12) },
