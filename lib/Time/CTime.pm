@@ -120,7 +120,7 @@ Time::CTime -- format times ala POSIX asctime
 
 	use Time::CTime
  	print ctime(time);
-	print asctime(timelocal(time));
+	print asctime(localtime(time));
 	print strftime(template, localtime(time)); 
 
 =head2 strftime conversions

@@ -25,6 +25,8 @@ installed as part of the installation process.
 
 Release notes:
 
+98.052201:
+	Minor bugfix: didn't recognize 5/18/1998.
 97.092101:
 	Fix a 5.004 warning.
 	Add support for "June 4, 1997"

@@ -17,7 +17,7 @@ use integer;
 # constants
 use vars qw(%mtable %umult %wdays $VERSION);
 
-$VERSION = 96.11_08_01;
+$VERSION = 98.05_22_01;
 
 # globals
 use vars qw($debug); 
@@ -418,7 +418,7 @@ sub parse_date_only
 		($$yr, $$mr, $$dr) = ($1, $3, $4);
 		printf "matched at %d.\n", __LINE__ if $debug;
 		return 1;
-	} elsif ($$tr =~ s#^(\d\d)([-./])(\d\d?)\2(\d\d\d\d?)(\s+|$)##) {
+	} elsif ($$tr =~ s#^(\d\d?)([-./])(\d\d?)\2(\d\d\d\d?)(\s+|$)##) {
 		# mm/dd/yyyy - is this safe?  No.
 		# -- or dd/mm/yyyy! If $1>12, then it's umabiguous.
 		# Otherwise check option UK for UK style date.
