@@ -17,9 +17,9 @@ use strict;
 use integer;
 
 # constants
-use vars qw($brit_jd $jd_1970_1_1 $VERSION);
+use vars qw($brit_jd $jd_epoch $jd_epoch_remainder $VERSION);
 
-$VERSION = 96.032702;
+$VERSION = 98.081201;
 
 # calculate the julian day, given $year, $month and $day
 sub julian_day
@@ -47,8 +47,7 @@ sub gm_julian_day
     my($sec, $min, $hour, $mon, $year, $day, $month);
     ($sec, $min, $hour, $day, $mon, $year) = gmtime($secs);
     $month = $mon + 1;
-    $year += 100 if $year < 70;
-    $year += 1900 if $year < 171;
+    $year += 1900;
     return julian_day($year, $month, $day)
 }
 
@@ -58,8 +57,7 @@ sub local_julian_day
     my($sec, $min, $hour, $mon, $year, $day, $month);
     ($sec, $min, $hour, $day, $mon, $year) = localtime($secs);
     $month = $mon + 1;
-    $year += 100 if $year < 70;
-    $year += 1900 if $year < 171;
+    $year += 1900;
     return julian_day($year, $month, $day)
 }
 
@@ -106,13 +104,24 @@ sub inverse_julian_day
         return ($y, $m, $d);
 }
 
-$jd_1970_1_1 = 2440588;
+{
+	my($sec, $min, $hour, $day, $mon, $year) = gmtime(0);
+	$year += 1900;
+	if ($year == 1970 && $mon == 0 && $day == 1) {
+		$jd_epoch = 2440588;
+	} else {
+		$jd_epoch = julian_day($year, $mon+1, $day);
+	}
+	$jd_epoch_remainder = $hour*3600 + $min*60 + $sec;
+}
 
 sub jd_secondsgm
 {
 	my($jd, $hr, $min, $sec) = @_;
 
-	return (($jd - $jd_1970_1_1) * 86400 + $hr * 3600 + $min * 60 + $sec);
+	return (($jd - $jd_epoch) * 86400 
+		+ $hr * 3600 + $min * 60 + $sec
+		- $jd_epoch_remainder);
 }
 
 sub jd_secondslocal

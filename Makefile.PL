@@ -2,7 +2,7 @@
 use ExtUtils::MakeMaker;
 
 WriteMakefile( 
-	'VERSION' => 98.06_09_02,
+	'VERSION' => 98.08_12_01,
 	'NAME' => 'Time-modules',
 	'dist' => { COMPRESS=>"gzip", SUFFIX=>"gz" },
 	);

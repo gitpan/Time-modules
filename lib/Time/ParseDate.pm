@@ -17,7 +17,7 @@ use integer;
 # constants
 use vars qw(%mtable %umult %wdays $VERSION);
 
-$VERSION = 98.06_09_01;
+$VERSION = 98.08_12_01;
 
 # globals
 use vars qw($debug); 
@@ -260,10 +260,14 @@ sub parsedate
 				print "calc year -this\n" if $debug;
 				$y = (localtime($now))[5];
 			}
+			$y += 1900;
 		}
 
-		$y += 100  if $y < 70;
-		$y += 1900 if $y < 171;
+		if ($y < 100) {
+			# this will stop working at year 2100
+			$y += 100 if $y < 70;
+			$y += 1900;
+		}
 
 		$jd = julian_day($y, $m, $d);
 		print "jd($y, $m, $d) = $jd\n" if $debug;
@@ -748,8 +752,7 @@ sub monthoff
 	# months are 0..11
 	my ($j, $j, $j, $d, $m11, $y) = &righttime($now, %options);
 
-	$y += 100  if $y < 70;
-	$y += 1900 if $y < 171;
+	$y += 1900;
 
 	print "m11 = $m11 + $months, y = $y\n" if $debug;
 
@@ -806,6 +809,9 @@ sub parse_year_only
 		return 1;
 	} elsif ($$tr =~ s#\'(\d\d)(?:\s+|$ )##) {
 		$$yr = $1;
+		# This will stop working in year 2100.
+		$$yr += 100  if $yr < 70;
+		$$yr += 1900;
 		printf "matched at %d.\n", __LINE__ if $debug;
 		return 1;
 	}
