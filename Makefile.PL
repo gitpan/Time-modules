@@ -2,7 +2,7 @@
 use ExtUtils::MakeMaker;
 
 WriteMakefile( 
-	'VERSION' => 101.062101,
+	'VERSION' => 2002.1001,
 	'NAME' => 'Time-modules',
 	($] >= 5.005 ?
 	    ('ABSTRACT' => 'Parse and format time values',

@@ -810,7 +810,7 @@ sub expand_two_digit_year
 		}
 	} elsif ($options{PREFER_FUTURE}) {
 		# being strict here would be silly
-		if ($yr < $within-10) {
+		if ($yr < $within-20) {
 			# it's 2019 and the date is '08'
 			$r = $yr + $century + 100;
 		}
@@ -1242,7 +1242,11 @@ C<undef> and an error string.
 
 =head1 AUTHOR
 
-David Muir Sharnoff <muir@idiom.com>.  Copyright (C) 1996-1999 All
-Rights Reserved.  Use and redistribution allowed at user's own
-risk.
+David Muir Sharnoff <muir@idiom.com>.  
+
+=head1 LICENSE
+
+Copyright (C) 1996-1999 David Muir Sharnoff.  License hereby
+granted for anyone to use, modify or redistribute this module at
+their own risk.  Please feed useful changes back to muir@idiom.com.
 

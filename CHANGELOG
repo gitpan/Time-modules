@@ -1,3 +1,6 @@
+2002.1001:
+	No real changes, just added a license.
+
 101.062001:
 	Paul Zimmer <pzimmer@bepress.com> found that '7/17/01' with
 	PREFER_FUTURE failed badly.  Fixed.  This was also submitted

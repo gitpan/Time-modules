@@ -271,3 +271,9 @@ C<tz_name()> determines the name of the timezone based on its offset
 Graham Barr <bodg@tiuk.ti.com>
 David Muir Sharnoff <muir@idiom.com>
 Paul Foley <paul@ascent.com>
+
+=head1 LICENSE
+
+David Muir Sharnoff disclaims any copyright and puts his contribution
+to this module in the public domain.
+
