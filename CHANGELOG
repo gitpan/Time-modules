@@ -1,3 +1,22 @@
+2003.1125:
+	Various folks have complained that JulianDay isn't correct.  An
+	errata section has been added to the documentation.
+
+	Mark Ivey <mivey@r2tech.com> add '@' as a synonym for 'at'.
+	Fixed typos.  
+
+	Bryan Henderson <bryanh@giraffe-data.com> sent in a patch to
+	allow NOW => 0 so that ParseDate can be used to parse relative
+	times. 
+
+	ewan@baremetal.com sent in a patch adding a bit of ISO 8601
+	support.
+
+	David Alban <david@responsible.com> doesn't like allowing the
+	hour 24:00.  I agree.  Gone if you have VALIDATE=>1.
+
+	Still to be done: the support the large number of ISO 8601 
+	date formats: http://hydracen.com/dx/iso8601.htm
 2003.0211:
 	Mike Cramer <cramer@webkist.com> sent a patch to Timezone to
 	handle changes in $ENV{TZ}. 
