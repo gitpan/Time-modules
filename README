@@ -1,0 +1,45 @@
+
+This package contains the following perl5 modules:
+
+	Time::CTime.pm
+		ctime, strftime, and asctime
+	Time::JulianDay.pm
+		Julian Day conversions
+	Time::ParseDate.pm
+		Reverses strftime and also understands relative times
+	Time::Timezone.pm
+	Time::DaysInMonth.pm
+
+
+To install these modules, cd to the directory that this README file is
+in and type the following:
+
+	perl Makefile.PL
+	make
+	make test
+	make install
+
+Documentation for these modules is part of the files themselves using
+the pod (Plain Old Documentation) format.  This documentation will be 
+installed as part of the installation process.  
+
+Release notes:
+
+96.032801:
+	Added support for "TZN
+96.032702: 
+	This is the first release to use the Makefile.PL 
+	packaging.  There are many changes with repect to 
+	previous releases.  All modules now running with -w and
+	use strict.
+
+	CTime.pm: should be faster
+	ParseDate.pm: core logic changed, more dates parsed.
+	datetime.t: more tests
+	Timezone.pm: ripped out tzset code and replaced it
+		with code from Graham Barr <bodg@tiuk.ti.com>
+
+
+TODO:
+	Replace CTime.pm 
+	Support Brittish dates
