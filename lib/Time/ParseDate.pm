@@ -17,7 +17,7 @@ use integer;
 # constants
 use vars qw(%mtable %umult %wdays $VERSION);
 
-$VERSION = 96.090101;
+$VERSION = 96.10_02_01;
 
 # globals
 use vars qw($debug); 
@@ -249,7 +249,7 @@ sub parsedate
 
 				print "calc year -past $day-$d $mon011-$m $y\n" if $debug;
 				$y -= 1 if ($mon011+1 < $m) || 
-					(($mon011+1 == $m) && ($day > $d));
+					(($mon011+1 == $m) && ($day < $d));
 			} elsif ($options{PREFER_FUTURE}) {
 				print "calc year -future\n" if $debug;
 				my ($day, $mon011);

@@ -12,7 +12,7 @@ $debug = 0;
 $Time::ParseDate::debug = $debug;
 
 use vars qw($VERSION);
-$VERSION = 96.051301;
+$VERSION = 96.10_02_01;
 
 BEGIN { 
 	$okat = 12;
@@ -197,7 +197,9 @@ BEGIN {
 		796980132, ['04/Apr/1995:00:22:12', ZONE => PDT], 
 		796983732, ['04/Apr/1995:00:22:12 -0800'], 
 		796983732, ['04/Apr/1995:00:22:12', ZONE => PST], 
-		202772100, ['5:35 pm june 4th 1976 EDT']
+		202772100, ['5:35 pm june 4th 1976 EDT'],
+		796892400, ['04/03', NOW => 796980132, PREFER_PAST => 1],
+		765702000, ['04/07', NOW => 796980132, PREFER_PAST => 1],
 		);
 
 	%tztests = (

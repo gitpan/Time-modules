@@ -204,7 +204,7 @@ sub tz_offset
 
 	$zone = lc $zone;
 
-	if($zone =~ /^([\-\+]\d{3,4})$/) {
+	if ($zone =~ /^([\-\+]\d{3,4})$/) {
 		my $v = 0 + $1;
 		return int($v / 100) * 60 + ($v % 100);
 	} elsif (exists $dstZone{$zone} && ($dst || !exists $Zone{$zone})) {
