@@ -16,7 +16,7 @@ use strict;
 # constants
 use vars qw(%mtable %umult %wdays $VERSION);
 
-$VERSION = 99.06_23_01;
+$VERSION = 99.11_17_01;
 
 # globals
 use vars qw($debug); 
@@ -32,18 +32,18 @@ my $y2k;
 CONFIG:	{
 
 	%mtable = qw(
-		Jan 1  January 1
-		Feb 2  February 2
-		Mar 3  March 3
-		Apr 4  April 4
+		Jan 1	Jan. 1	January 1
+		Feb 2	Feb. 2	February 2
+		Mar 3	Mar. 3	March 3
+		Apr 4	Apr. 4	April 4
 		May 5 
-		Jun 6  June 6 
-		Jul 7  July 7 
-		Aug 8  August 8 
-		Sep 9  September 9 
-		Oct 10 October 10 
-		Nov 11 November 11 
-		Dec 12 December 12 );
+		Jun 6	Jun. 6	June 6 
+		Jul 7	Jul. 7	July 7 
+		Aug 8	Aug. 8	August 8 
+		Sep 9	Sep. 9	September 9 
+		Oct 10	Oct. 10	October 10 
+		Nov 11	Nov. 11	November 11 
+		Dec 12	Dec. 12	December 12 );
 	%umult = qw(
 		sec 1 second 1
 		min 60 minute 60
@@ -331,7 +331,7 @@ sub parsedate
 	$H = 0 unless $H; # -w
 
 	if ($options{VALIDATE} and
-		($S < 0 or $M < 0 or $H > 0 or $S > 59 or $M > 59 or $H > 23)) 
+		($S < 0 or $M < 0 or $H < 0 or $S > 59 or $M > 59 or $H > 23)) 
 	{
 		return (undef, "illegal HMS: $H, $M, $S") if wantarray();
 		return undef;
@@ -499,7 +499,7 @@ sub parse_date_only
 			)?
 			(\d\d?)
 			(\s+ | - | \. | /)
-			(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)
+			(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\.?
 			(?:
 				\2
 				(\d\d (?:\d\d)? )
@@ -521,7 +521,7 @@ sub parse_date_only
 				(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?
 				\s+
 			)?
-			(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)
+			(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\.?
 			(\s+ | - | \. | /)
 				
 			(\d\d?)
@@ -541,9 +541,9 @@ sub parse_date_only
 		print "y undef\n" if ($debug && ! defined($$yr));
 		return 1;
 	} elsif ($$tr =~ s#^(?xi)
-			(January|Jan|February|Feb|March|Mar|April|Apr|May|
-			    June|Jun|July|Jul|August|Aug|September|Sep|
-			    October|Oct|November|Nov|December|Dec)
+			(January|Jan\.?|February|Feb\.?|March|Mar\.?|April|Apr\.?|May|
+			    June|Jun\.?|July|Jul\.?|August|Aug\.?|September|Sep\.?|
+			    October|Oct\.?|November|Nov\.?|December|Dec\.?)
 			\s+
 			(\d+)
 			(?:st|nd|rd|th)?
@@ -613,9 +613,9 @@ sub parse_date_only
 	} elsif ($$tr =~ s#^(?xi)
 			(\d{1,2})
 			(\s+ | - | \. | /)
-			(January|Jan|February|Feb|March|Mar|April|Apr|May|
-			    June|Jun|July|Jul|August|Aug|September|Sep|
-			    October|Oct|November|Nov|December|Dec)
+			(January|Jan\.?|February|Feb\.?|March|Mar\.?|April|Apr\.?|May|
+			    June|Jun\.?|July|Jul\.?|August|Aug\.?|September|Sep\.?|
+			    October|Oct\.?|November|Nov\.?|December|Dec\.?)
 			(?:
 				\2
 				(
@@ -637,9 +637,9 @@ sub parse_date_only
 			(\d+)
 			(?:st|nd|rd|th)?
 			\s+
-			(January|Jan|February|Feb|March|Mar|April|Apr|May|
-			    June|Jun|July|Jul|August|Aug|September|Sep|
-			    October|Oct|November|Nov|December|Dec)
+			(January|Jan\.?|February|Feb\.?|March|Mar\.?|April|Apr\.?|May|
+			    June|Jun\.?|July|Jul\.?|August|Aug\.?|September|Sep\.?|
+			    October|Oct\.?|November|Nov\.?|December|Dec\.?)
 			(?: 
 				\,?
 				\s+
@@ -814,6 +814,9 @@ sub expand_two_digit_year
 			# it's 2019 and the date is '08'
 			$r = $yr + $century + 100;
 		}
+	} elsif ($options{UNAMBIGUOUS}) {
+		# we really shouldn't guess
+		return undef;
 	} else {
 		# prefer the current century in most cases
 
@@ -1185,6 +1188,7 @@ C<undef> and an error string.
 
 =head1 AUTHOR
 
-David Muir Sharnoff <muir@idiom.com>
+David Muir Sharnoff <muir@idiom.com>.  Copyright (C) 1996-1999 All
+Rights Reserved.  Use and redistribution allowed at user's own
+risk.
 
-Patch for UK-style dates: Sam Yates <syates@maths.adelaide.edu.au>

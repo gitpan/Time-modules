@@ -1,3 +1,11 @@
+99.111701:
+	Allen Smith <easmith@beatrice.rutgers.edu> noticed that VALIDATE
+	wouldn't accept hours > 0...  
+	Hugh C Kennedy <kennedyh@engin.umich.edu> contributed patches to
+	parse months like `Jan.' in additon to `Jan' and `January'.
+99.062401:
+	Randy Kobes <randy@theoryx5.uwinnipeg.ca> sent in a fix for
+	Timezone.pm that allows all tests to pass on MSWin32.
 99.062301:
 	Eric Prestemon <ecp@adknowledge.com> noticed that %y would print
 	"0" in 2000, not "00" as it should.  Fixed.
@@ -58,5 +66,5 @@
 	datetime.t: more tests
 	Timezone.pm: ripped out tzset code and replaced it
 		with code from Graham Barr <bodg@tiuk.ti.com>
-
-
+??.?????:
+	Patch for UK-style dates: Sam Yates <syates@maths.adelaide.edu.au>

@@ -69,3 +69,7 @@ a month.  That's all it does.  Really!
 =head1 AUTHOR
 
 David Muir Sharnoff <muir@idiom.com>
+
+Copyright (C) 1996-1999 David Muir Sharnoff.  All Rights Reserved.
+Use and redistribution allowed at user's own risk.
+
