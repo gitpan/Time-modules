@@ -25,6 +25,10 @@ installed as part of the installation process.
 
 Release notes:
 
+96.110801:
+	Added support for negative relative times.
+	Bugfix: "now" by itself was ignored.
+	Bugfix: could not combine "now" with time offsets (only date offsets)
 96.032801:
 	Added support for "TZN
 96.032702: 

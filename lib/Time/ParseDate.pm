@@ -17,7 +17,7 @@ use integer;
 # constants
 use vars qw(%mtable %umult %wdays $VERSION);
 
-$VERSION = 96.10_02_01;
+$VERSION = 96.11_08_01;
 
 # globals
 use vars qw($debug); 
@@ -87,7 +87,7 @@ sub parsedate
 			 ([-+] \d\d\d\d)
 			  (?: \("?(?:(?:[A-Z]{1,4}[TCW56])|IDLE)\))?
 			 )?
-			##xi) {
+			##xi) { #"emacs
 		# [ \d]/Mon/yyyy:hh:mm:ss [-+]\d\d\d\d
 		# This is the format for www server logging.
 
@@ -378,7 +378,7 @@ sub parse_tz_only
 				|
 				$ 
 			)
-			##x) {
+			##x) { #"emacs
 		$$tzo = &mkoff($1);
 		printf "matched at %d.\n", __LINE__ if $debug;
 		return 1;
@@ -398,7 +398,7 @@ sub parse_tz_only
 		$$tzo = &mkoff($o);
 		printf "matched at %d.\n", __LINE__ if $debug;
 		return 1;
-	} elsif ($$tr =~ s#^"?((?:[A-Z]{1,4}[TCW56])|IDLE)(?:\s+|$ )##x) {
+	} elsif ($$tr =~ s#^"?((?:[A-Z]{1,4}[TCW56])|IDLE)(?:\s+|$ )##x) { #"
 		$$tz = $1;
 		printf "matched at %d.\n", __LINE__ if $debug;
 		return 1;
@@ -653,7 +653,7 @@ sub parse_time_only
 			|
 				$
 			)
-			!!) {
+			!!) { #"emacs
 		# HH[[:]MM[:SS]]meridan [zone] 
 		my $ampm;
 		$$hr = $1 || $5 || $9 || 0; # 9 is undef, but 5 is defined..
@@ -690,7 +690,7 @@ sub parse_time_offset
 
 	if ($$tr =~ s#^(?xi)
 			(?:
-				\+
+				(\+ | \-)
 				\s*
 			)?
 			(\d+)
@@ -704,7 +704,7 @@ sub parse_time_offset
 			##) {
 		# count units
 		$$rsr = 0 unless defined $$rsr;
-		$$rsr += $umult{"\L$2"} * $1;
+		$$rsr += $umult{"\L$3"} * "$1$2";
 		printf "matched at %d.\n", __LINE__ if $debug;
 		return 1;
 	} 
@@ -740,8 +740,6 @@ sub monthoff
 	my ($now, $months, %options) = @_;
 
 	# months are 0..11
-	my $j;
-	my ($y, $m11, $d);
 	my ($j, $j, $j, $d, $m11, $y) = &righttime($now, %options);
 
 	$y += 100  if $y < 70;
@@ -817,11 +815,9 @@ sub parse_date_offset
 	# mr - month return
 	# dr - day return
 	# rdr - relatvie day return
-	# asr - absolute seconds return
-	# rsr - relatvie day return
+	# rsr - relative second return
 
 	my $j;
-	my $wday;
 	my $wday = (&righttime($now, %options))[6];
 
 	$$tr =~ s#^\s+##;
@@ -832,14 +828,14 @@ sub parse_date_offset
 					now
 					\s+
 				)?
-				\+
+				(\+ | \-)
 				\s*
 			)?
 			(\d+)
 			\s*
 			(day|week|month|year)s?
 			##) {
-		&calc($rsr, $yr, $mr, $dr, $rdr, $now, $2, $1, %options);
+		&calc($rsr, $yr, $mr, $dr, $rdr, $now, $3, "$1$2", %options);
 		printf "matched at %d.\n", __LINE__ if $debug;
 		return 1;
 	} elsif ($$tr =~ s#^(?xi)
@@ -916,6 +912,9 @@ sub parse_date_offset
 		&calc($rsr, $yr, $mr, $dr, $rdr, $now, $1, 1, %options);
 		printf "matched at %d.\n", __LINE__ if $debug;
 		return 1;
+	} elsif ($$tr =~ s#^now (?: \s+ | $ )##x) {
+		$$rdr = 0;
+		return 1;
 	}
 	return 0;
 }
@@ -989,7 +988,10 @@ Date parsing can also use options.  The options are as follows:
 	"last" dow
 	"last week"
 	"now"
-	"now +" count units
+	"now" "+" count units
+	"now" "-" count units
+	"+" count units
+	"-" count units
 
 =head2 Absolute time formats:
 
@@ -1008,6 +1010,8 @@ Date parsing can also use options.  The options are as follows:
 	count "hours"
 	"+" count units
 	"+" count
+	"-" count units
+	"-" count
 
 =head2 Timezone formats:
 
