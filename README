@@ -23,32 +23,3 @@ Documentation for these modules is part of the files themselves using
 the pod (Plain Old Documentation) format.  This documentation will be 
 installed as part of the installation process.  
 
-Release notes:
-
-98.052201:
-	Minor bugfix: didn't recognize 5/18/1998.
-97.092101:
-	Fix a 5.004 warning.
-	Add support for "June 4, 1997"
-96.110801:
-	Added support for negative relative times.
-	Bugfix: "now" by itself was ignored.
-	Bugfix: could not combine "now" with time offsets (only date offsets)
-96.032801:
-	Added support for "TZN
-96.032702: 
-	This is the first release to use the Makefile.PL 
-	packaging.  There are many changes with repect to 
-	previous releases.  All modules now running with -w and
-	use strict.
-
-	CTime.pm: should be faster
-	ParseDate.pm: core logic changed, more dates parsed.
-	datetime.t: more tests
-	Timezone.pm: ripped out tzset code and replaced it
-		with code from Graham Barr <bodg@tiuk.ti.com>
-
-
-TODO:
-	Replace CTime.pm 
-	Support Brittish dates

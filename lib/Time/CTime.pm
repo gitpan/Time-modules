@@ -133,8 +133,8 @@ Time::CTime -- format times ala POSIX asctime
 	%b	month abbr
 	%B 	month
 	%c 	ctime format: Sat Nov 19 21:05:57 1994
-	%d 	numeric day of the month
-	%e 	DD
+	%d 	DD
+	%e 	numeric day of the month
 	%D 	MM/DD/YY
 	%h 	month abbr
 	%H 	hour, 24 hour clock, leading 0's)
@@ -177,5 +177,6 @@ libraries.
 
 Written by David Muir Sharnoff <muir@idiom.com>.
 
-Tthe starting point for this package was a posting by 
+The starting point for this package was a posting by 
 Paul Foley <paul@ascent.com> 
+

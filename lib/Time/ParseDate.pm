@@ -17,7 +17,7 @@ use integer;
 # constants
 use vars qw(%mtable %umult %wdays $VERSION);
 
-$VERSION = 98.08_12_01;
+$VERSION = 98.11_28_01;
 
 # globals
 use vars qw($debug); 
@@ -640,6 +640,10 @@ sub parse_time_only
 						(?:
 							\:
 							(\d\d)	(?# $7)
+								(?:
+									(?# don't barf on sybase millisecond timings)
+									\:\d\d\d
+								)?
 						)?
 					)
 					\s*

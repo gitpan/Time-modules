@@ -2,7 +2,10 @@
 use ExtUtils::MakeMaker;
 
 WriteMakefile( 
-	'VERSION' => 98.08_12_01,
+	'VERSION' => 98.11_28_01,
 	'NAME' => 'Time-modules',
+	($] >= 5.005 ?
+	    ('ABSTRACT' => 'Parse and format time values',
+	     'AUTHOR'	=> 'David Muir Sharnoff <muir@idiom.com>') : ()),
 	'dist' => { COMPRESS=>"gzip", SUFFIX=>"gz" },
 	);
