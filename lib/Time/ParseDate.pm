@@ -17,7 +17,7 @@ use integer;
 # constants
 use vars qw(%mtable %umult %wdays $VERSION);
 
-$VERSION = 96.051301;
+$VERSION = 96.061301;
 
 # globals
 use vars qw($debug); 
@@ -51,10 +51,10 @@ CONFIG:	{
 		mon 1 monday 1
 		tue 2 tuesday 2
 		wed 3 wednesday 3
-		thu 4 thursdsay 4
+		thu 4 thursday 4
 		fri 5 friday 5
 		sat 6 saturday 6
-		sun 7 sunday 7 );
+		);
 }
 
 sub parsedate
