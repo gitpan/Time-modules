@@ -158,7 +158,7 @@ Time::JulianDay -- Julian calendar manipulations
 	$jd = julian_day($year, $month_1_to_12, $day)
 	$jd = local_julian_day($seconds_since_1970);
 	$jd = gm_julian_day($seconds_since_1970);
-	($year, $month, $day) = inverse_julian_day($jd)
+	($year, $month_1_to_12, $day) = inverse_julian_day($jd)
 	$dow = day_of_week($jd) 
 
 	print (Sun,Mon,Tue,Wed,Thu,Fri,Sat)[$dow];

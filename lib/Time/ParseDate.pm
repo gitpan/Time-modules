@@ -17,7 +17,7 @@ use integer;
 # constants
 use vars qw(%mtable %umult %wdays $VERSION);
 
-$VERSION = 96.061301;
+$VERSION = 96.090101;
 
 # globals
 use vars qw($debug); 
@@ -744,16 +744,21 @@ sub monthoff
 	my ($y, $m11, $d);
 	my ($j, $j, $j, $d, $m11, $y) = &righttime($now, %options);
 
-	print "m = $m11\n" if $debug;
-
 	$y += 100  if $y < 70;
 	$y += 1900 if $y < 171;
 
+	print "m11 = $m11 + $months, y = $y\n" if $debug;
+
 	$m11 += $months;
-	if ($m11 > 11) {
+	if ($m11 > 11 || $m11 < 0) {
+		$y -= 1 if $m11 < 0;
 		$y += int($m11/12);
+
+		# this is required to work around a bug in perl 5.003
+		no integer;
 		$m11 %= 12;
 	}
+	print "m11 = $m11, y = $y\n" if $debug;
 
 	# 
 	# What is "1 month from January 31st?"  
@@ -764,7 +769,7 @@ sub monthoff
 	#
 	# If you disagree, change the following code.
 	#
-	if ($d > 30 or $d > 28 && $m11 == 1) {
+	if ($d > 30 or ($d > 28 && $m11 == 1)) {
 		require Time::DaysInMonth;
 		my $dim = Time::DaysInMonth::days_in($y, $m11+1);
 		print "dim($y,$m11+1)= $dim\n" if $debug;
