@@ -16,7 +16,7 @@ use strict;
 # constants
 use vars qw(%mtable %umult %wdays $VERSION);
 
-$VERSION = 101.06_21_01;
+$VERSION = 2003.0211;
 
 # globals
 use vars qw($debug); 
@@ -446,7 +446,9 @@ sub parse_tz_only
 		return 1;
 	} elsif ($$tr =~ s#^"?((?:[A-Z]{1,4}[TCW56])|IDLE)(?:\s+|$ )##x) { #"
 		$$tz = $1;
-		printf "matched at %d.\n", __LINE__ if $debug;
+		$$tz .= " DST" 
+			if $$tz eq 'MET' && $$tr =~ s#^DST(?:\s+|$ )##x;
+		printf "matched at %d: '$$tz'.\n", __LINE__ if $debug;
 		return 1;
 	}
 	return 0;

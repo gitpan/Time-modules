@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -I. -w
+#!/usr/bin/perl5.00502 -I. -w
 
 # David Muir Sharnoff <muir@idiom.com>
 
@@ -270,6 +270,7 @@ BEGIN {
 		796375331, ['1 second 4 days ago', WHOLE =>1, ZONE => PDT, NOW => 796720932],
 		953467299, ['Sun Mar 19 17:31:39 IST 2000'],
 		784111777, ['Sunday, 06-Nov-94 08:49:37 GMT' ],
+		954933672, ['Wed Apr  5 13:21:12 MET DST 2000' ],
 		);
 
 	%tztests = (

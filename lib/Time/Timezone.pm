@@ -15,7 +15,7 @@ use strict;
 
 use vars qw($VERSION);
 
-$VERSION = 101.062101;
+$VERSION = 2003.0211;
 
 sub tz2zone
 {
@@ -64,14 +64,16 @@ sub tz_local_offset
 	$time = time() unless $time;
 	my (@l) = localtime($time);
 	my $isdst = $l[8] || 0;
+	my $tzenv = defined($ENV{TZ}) ? $ENV{TZ} : "__notz";
 
-	if (@Timezone::tz_local && defined($Timezone::tz_local[$isdst])) {
-		return $Timezone::tz_local[$isdst];
+	if ($Timezone::tz_local{$tzenv} &&
+	    defined($Timezone::tz_local{$tzenv}[$isdst])) {
+		return $Timezone::tz_local{$tzenv}[$isdst];
 	}
 
-	$Timezone::tz_local[$isdst] = &calc_off($time);
+	$Timezone::tz_local{$tzenv}[$isdst] = &calc_off($time);
 
-	return $Timezone::tz_local[$isdst];
+	return $Timezone::tz_local{$tzenv}[$isdst];
 }
 
 sub calc_off
@@ -124,6 +126,7 @@ CONFIG: {
 	    "hdt"  =>	-9*3600,	 # Hawaii Daylight
 	    "bst"  =>	+1*3600,	 # British Summer   
 	    "mest" =>	+2*3600,	 # Middle European Summer   
+	    "met dst" => +2*3600,	 # Middle European Summer   
 	    "sst"  =>	+2*3600,	 # Swedish Summer
 	    "fst"  =>	+2*3600,	 # French Summer
 	    "wadt" =>	+8*3600,	 # West Australian Daylight
@@ -147,6 +150,7 @@ CONFIG: {
 	    "ast"	=>  -4*3600,	 # Atlantic Standard
 	    "est"	=>  -5*3600,	 # Eastern Standard
 	    "cst"	=>  -6*3600,	 # Central Standard
+	    "cest"	=>  +2*3600,	 # Central European Summer
 	    "mst"	=>  -7*3600,	 # Mountain Standard
 	    "pst"	=>  -8*3600,	 # Pacific Standard
 	    "yst"	=>  -9*3600,	 # Yukon Standard
