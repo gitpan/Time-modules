@@ -4,7 +4,6 @@
 
 # find out why it died if not running under make
 
-$rerun = $ENV{'PERL_DL_NONLAZY'} ? 0 : 1; 
 $debug = 0; 
 
 $Time::ParseDate::debug = $debug;
@@ -25,6 +24,8 @@ BEGIN {
 		'd' =>	'19',
 		'D' =>	'11/19/94',
 		'e' =>	'19',
+		'f' =>	'.500',
+		'F' =>	'.500000',
 		'H' =>	'21',
 		'I' =>	'09',
 		'j' =>	'323',
@@ -53,8 +54,12 @@ BEGIN {
 	$sdt_start_line = __LINE__+2;
 	@sdt = (
 		796969332, ['950404 00:22:12 "EDT'],
+		796969332, ['950404 00:22:12.500 "EDT'],
+		796969332.5, ['950404 00:22:12.500 "EDT', SUBSECOND => 1],
 		786437763, ['Fri Dec  2 22:56:03 1994', NOW => 785300000],
 		786408963, ['Fri Dec  2 22:56:03 GMT+0 1994', NOW => 785300000],
+		786408963, ['Fri Dec  2 22:56:03.500 GMT+0 1994', NOW => 785300000],
+		786408963.5, ['Fri Dec  2 22:56:03.500 GMT+0 1994', SUBSECOND => 1, NOW => 785300000],
 		786437763, ['Fri Dec  2 22:56:03 GMT-8 1994', NOW => 785300000],
 		786437760, ['94/12/02.22:56', NOW => 785300000],
 		786437760, ['1994/12/02 10:56Pm', NOW => 785300000],
@@ -63,9 +68,14 @@ BEGIN {
 		786437760, ['12/2/94 10:56Pm', NOW => 785300000],
 		786437760, ['94/12/2 10:56 pm', NOW => 785300000],
 		786437763, ['94/12/02 22:56:03', NOW => 785300000],   
-		786437763, ['94/12/02 10:56:03:031PM', NOW => 785300000],   
+		786437763, ['94/12/02 22:56:03.500', NOW => 785300000],   
+		786437763.5, ['94/12/02 22:56:03.500', SUBSECOND => 1, NOW => 785300000],   
+		786437763, ['94/12/02 10:56:03:500PM', NOW => 785300000],   
+		786437763.5, ['94/12/02 10:56:03:500PM', SUBSECOND => 1, NOW => 785300000],   
 		786437760, ['10:56Pm 94/12/02', NOW => 785300000],
 		786437763, ['22:56:03 1994/12/02', NOW => 785300000],
+		786437763, ['22:56:03.5 1994/12/02', NOW => 785300000],
+		786437763.5, ['22:56:03.5 1994/12/02', SUBSECOND => 1,  NOW => 785300000],
 		786437760, ['22:56 1994/12/2', NOW => 785300000],
 		786437760, ['10:56PM 12/02/94', NOW => 785300000],
 		786437760, ['10:56 pm 12/2/94', NOW => 785300000],
@@ -74,6 +84,9 @@ BEGIN {
 		796980132, ['Tue Apr 4 00:22:12 PDT 1995'],
 		796980132, ['April 4th 1995 12:22:12AM', ZONE => PDT],
 		827878812, ['Tue Mar 26 14:20:12 1996'],		
+		827878812, ['Tue Mar 26 14:20:12 1996', SUBSECOND => 1],
+		827878812, ['Tue Mar 26 14:20:12.5 1996'],
+		827878812.5, ['Tue Mar 26 14:20:12.5 1996', SUBSECOND => 1],
 		827878812, ['Tue Mar 26 14:20:12 GMT-0800 1996'],
 		827878812, ['Tue Mar 26 17:20:12 EST 1996'],
 		827878812, ['Tue Mar 26 17:20:12 GMT-0500 1996'],
@@ -200,7 +213,7 @@ BEGIN {
 		828860438, ['06/Apr/1996:23:00:38 -0800'],
 		828860438, ['06/Apr/1996:23:00:38'],
 		828943238, ['07/Apr/1996:23:00:38 -0700'],
-		828943238, ['07/Apr/1996:23:00:38'],
+		828878618, ['07/Apr/1996:12:03:38', ZONE => GMT],
 		828856838, ['06/Apr/1996:23:00:38 -0700'],
 		828946838, ['07/Apr/1996:23:00:38 -0800'],
 		895474800, ['5/18/1998'],
@@ -210,7 +223,7 @@ BEGIN {
 		202772100, ['5:35 pm june 4th 1976 EDT'],
 		796892400, ['04/03', NOW => 796980132, PREFER_PAST => 1],
 		765702000, ['04/07', NOW => 796980132, PREFER_PAST => 1],
-		883641600, ['1/1/1998'],
+		883641600, ['1/1/1998', VALIDATE => 1],
 		852105600, ['1/1/1997'],
 		852105600, ['last year', NOW => 883641600],
 		820483200, ['-2 years', NOW => 883641600],
@@ -218,6 +231,29 @@ BEGIN {
 		891864000, ['+3 days', NOW => 891608400],
 		891777600, ['+2 days', NOW => 891608400],
 		902938515, ['1998-08-12 12:15:15', ZONE => 'EDT'],
+		946684800, ['2000-01-01 00:00:00', ZONE => GMT],
+		1262304000, ['2010-01-01 00:00:00', ZONE => GMT],
+		757065600, ['12/28/93', NOW => 1262304000],
+		1924675200, ['12/28/30', NOW => 1262304000],
+		0, ['1970/01/01 00:00:00', ZONE => GMT],
+		796980132, ['Tue 4 Apr 1995 00:22:12 PDT 8', WHOLE => 0],
+		789008700, ['dec 32 94 17:05'],
+		796983072, ['1995/04/04 00:71:12 PDT'],
+		undef, ['1995/04/04 00:71:12 PDT', VALIDATE => 1],
+		undef, ['38/38/21', VALIDATE => 1],
+		undef, ['dec 32 94 17:05', VALIDATE => 1],
+		undef, ['Tue 4 Apr 1995 00:22:12 PDT 8', WHOLE => 1],
+		undef, ['Tue 4 Apr 199 00:22:12 PDT'],
+		1924675200, ['12/28/30', NOW => 1262304000, PREFUR_FUTURE => 1],
+		1924675200, ['28/12/30', NOW => 1262304000, PREFUR_FUTURE => 1, UK => 1],
+		-1578240000, ['12/28/19', NOW => 902938515, PREFER_PAST => 1],
+		-347155200, ['1959-01-01 00:00:00', ZONE => GMT],
+		-158083200, ['12/28/64', NOW => 902938515],
+		-1231084800, ['12/28/30', NOW => 1262304000, PREFER_PAST => 1],
+		-345600, ['1969-12-28 00:00:00', ZONE => GMT],
+		-1231084800, ['28/12/30', NOW => 1262304000, PREFER_PAST => 1, UK => 1],
+		1577520000, ['12/28/19', NOW => 902938515, PREFER_FUTURE => 1],
+		1766908800, ['12/28/25', NOW => 902938515],
 		);
 
 	%tztests = (
@@ -229,8 +265,6 @@ BEGIN {
 
 }
 
-BEGIN { unshift(@INC, "."); }
-
 use Time::CTime;
 use Time::JulianDay;
 use Time::ParseDate;
@@ -241,23 +275,40 @@ my $before_big = $okat-1+scalar(keys %k)+scalar(keys %tztests);
 
 printf "1..%d\n", $before_big + @sdt/2;
 
-$etime = 785307957;
+$epoch = ($Time::JulianDay::jd_epoch - 2440588) * 86400
+	+ $Time::JulianDay::jd_epoch_remainder;
+print STDERR "\nEpoch = $epoch\n" if $epoch;
+
+$etime = 785307957.5 - $epoch;
+
+@x = localtime(785307957);
+@y = gmtime(785307957);
+my $hd = $y[2] - $x[2];
+$hd += 24 if $hd < 0;
+$hd %= 24;
+if ($hd != 8) {
+	print STDERR "\nIt seems localtime() does not honor \$ENV{TZ} when set in the test script.\nPlease set the TZ environment variable to PST8PDT and rerun.\n";
+	print "hd = $hd, x = @x, y = @y\n" if $debug || -t STDOUT;
+	print "not ok 1\n";
+} else {
+	print "ok 1\n";
+}
 
 eval " 1/0; ";  # tests a bug in ctime!
 $x = ctime($etime);
-print $x eq "Sat Nov 19 21:05:57 PST 1994\n" ? "ok 1\n" : "not ok 1\n";
+print $x eq "Sat Nov 19 21:05:57 PST 1994\n" ? "ok 2\n" : "not ok 2\n";
 
-print julian_day(1994,11,19) == 2449676 ? "ok 2\n" : "not ok 2\n";
+print julian_day(1994,11,19) == 2449676 ? "ok 3\n" : "not ok 3\n";
 
 @x = inverse_julian_day(2449676);
 
-print $x[0] == 1994 ? "ok 3\n" : "not ok 3\n";
-print $x[1] == 11 ? "ok 4\n"   : "not ok 4\n";
-print $x[2] == 19 ? "ok 5\n"   : "not ok 5\n";
+print (($x[0] == 1994 and $x[1] == 11 and $x[2] == 19) ? "ok 4\n" : "not ok 4\n");
+
+print "ok 5\n";
 
 print day_of_week(2449676) == 6 ? "ok 6\n" : "not ok 6\n";
 
-$bs = 786439995;
+$bs = 786439995 - $epoch;
 
 use vars qw($isdst $wday $yday);
 ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = gmtime($bs);
@@ -292,8 +343,10 @@ print $lo == - 28800 ? "ok 11\n" : "no ok 11\n";
 ################### make these last...
 $c = $okat;
 
+@lt = localtime($etime);
+$lt[0] += ($etime - int($etime));
 foreach $i (sort keys %k) {
-	$x = strftime("-%$i-", localtime($etime));
+	$x = strftime("-%$i-", @lt);
 	print $x eq "-$k{$i}-" ? "ok $c\n" : "not ok $c\n";
 	if ($debug && $x ne "-$k{$i}-") {
 		print "strftime(\"-%$i-\") = $x.\n\tshould be: $k{$i}.\n";
@@ -305,7 +358,7 @@ foreach $i (sort keys %k) {
 foreach $i (keys %tztests) {
 	$tzo = tz_offset($i,799572132);
 	print $tzo eq $tztests{$i} ? "ok $c\n" : "not ok $c\n";
-	if (($debug || $rerun) && $tzo ne $tztests{$i}) {
+	if (($debug || -t STDOUT) && $tzo ne $tztests{$i}) {
 		print "tz_offset($i) = $tzo != $tztests{$i}\n";
 		exit(0);
 	}
@@ -314,32 +367,43 @@ foreach $i (keys %tztests) {
 
 while (@sdt) {
 	$es = shift(@sdt);
+	$es -= $epoch if defined($es);
 	$ar = shift(@sdt);
-	$s = parsedate(@$ar, 'WHOLE' => 1);
-	if ($es == $s) {
+	$toparse = shift(@$ar);
+	%opts = @$ar;
+	if (defined $opts{NOW}) {
+		$opts{NOW} -= $epoch;
+	}
+	$opts{WHOLE} = 1 unless defined $opts{WHOLE};
+	$s = parsedate($toparse, %opts);
+	if (! defined($es) && ! defined($s)) {
+		print "ok $c\n";
+	} elsif ($es == $s) {
 		print "ok $c\n";
 	} else {
 		print "not ok $c\n";
-		if ($rerun || $debug) {
-			print strftime("Expected:    %c %Z\n", localtime($es));
+		if (-t STDOUT || $debug) {
+			if (defined($es)) {
+				print strftime("Expected($es):    %c %Z\n", localtime($es));
+			} else {
+				print "Expected undef\n";
+			}
+
 			print strftime("\tGot($s): %c %Z", localtime($s));
 			print strftime(" (%m/%d %I:%M %p GMT)\n", gmtime($s));
-			my @z = @$ar;
-			print "\tInput: $z[0]\n";
-			shift(@z);
-			while (@z) {
-				my $zk = shift(@z);
-				my $zv = shift(@z);
+			print "\tInput: $toparse\n";
+			for my $zk (keys %opts) {
+				my $zv = $opts{$zk};
 				if ($zk eq 'NOW') {
 					print strftime("\t\tNOW => %c %Z\n", localtime($zv));
 				} else {
 					print "\t\t$zk => $zv\n";
 				}
 			}
-			if ($rerun) {
+			if (-t STDOUT) {
 				print "The parse...\n";
 				$Time::ParseDate::debug = 1;
-				&parsedate(@$ar, 'WHOLE' => 1);
+				&parsedate($toparse, %opts);
 				printf "Test that failed was on line %d\n",	
 					$c-$before_big+$sdt_start_line-1;
 				exit(0);

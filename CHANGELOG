@@ -1,4 +1,28 @@
+99.062301:
+	Eric Prestemon <ecp@adknowledge.com> noticed that %y would print
+	"0" in 2000, not "00" as it should.  Fixed.
 
+	Parsedate() now checks for wantarray() and returns what remains of
+	its input when called from array context.
+
+	Added another parsing option: VALIDATE.  When VALIDATE is set,
+	silly values for hours, months, etc will be rejected.  Like the
+	32nd of December will no longer be new years day.
+99.062201:
+	Optionally return fractional seconds from ParseDate (including 
+	the SYBASE formatted ones).  Provide for printing fractional
+	seconds in CTime.  Changes from Douglas Wegscheid 
+	<wegscd@whirlpool.com>
+99.061601:
+	More attempts to support systems whose time function isn't 
+	centered around Jan 1, 1970 midnight GMT.
+99.061501:
+	Fixed a couple of compiler warnings.  Did extensive testing with
+	dates beyond 2000 and before 1970.  Quite a few code changes.
+	Old code would have worked in many > 2000 cases but broke 
+	terribly for dates < 1970.
+	New code should work until year 10k.  Well, there's one problem:
+	unix time format is only 32 bits, signed. 
 98.112901:
 	Slight change to avoid an "Use of uninitialized value" error
 	pointed out by Mike Coffin <mhc@Eng.Sun.COM>.

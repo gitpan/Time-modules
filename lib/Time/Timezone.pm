@@ -65,7 +65,7 @@ sub tz_local_offset
 	my (@l) = localtime($time);
 	my $isdst = $l[8];
 
-	if (defined($Timezone::tz_local[$isdst])) {
+	if (@Timezone::tz_locall && defined($Timezone::tz_local[$isdst])) {
 		return $Timezone::tz_local[$isdst];
 	}
 
