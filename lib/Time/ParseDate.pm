@@ -17,7 +17,7 @@ use integer;
 # constants
 use vars qw(%mtable %umult %wdays $VERSION);
 
-$VERSION = 98.05_22_01;
+$VERSION = 98.06_09_01;
 
 # globals
 use vars qw($debug); 
@@ -182,7 +182,7 @@ sub parsedate
 		print defined($d) ? "$d, " : "no d, ";
 		print defined($y) ? "$y\n" : "no y.\n";
 		print defined($rs) ? "rs: $rs.\n" : "no rs\n";
-		print defined($rd) ? "rs: $rd.\n" : "no rd\n";
+		print defined($rd) ? "rd: $rd.\n" : "no rd\n";
 		print "parse:$parse\n";
 		print "passes: $passes\n";
 	}
@@ -213,7 +213,6 @@ sub parsedate
 		}
 	}
 
-
 	return undef if $options{TIME_REQUIRED} && ! defined($rs) 
 		&& ! defined($H) && ! defined($rd);
 
@@ -221,11 +220,12 @@ sub parsedate
 	my $jd;
 
 	if (defined $rd) {
-		if (defined $rs) {
+		if (defined $rs || ! (defined($H) || defined($M) || defined($S))) {
 			print "fully relative\n" if $debug;
 			my ($j, $in, $it);
+			my $definedrs = defined($rs) ? $rs : 0;
 			my ($isdst_now, $isdst_then);
-			my $r = $now + $rd * 86400 + $rs;
+			my $r = $now + $rd * 86400 + $definedrs;
 			#
 			# It's possible that there was a timezone shift 
 			# during the time specified.  If so, keep the
@@ -268,7 +268,6 @@ sub parsedate
 		$jd = julian_day($y, $m, $d);
 		print "jd($y, $m, $d) = $jd\n" if $debug;
 	}
-
 
 	# put time into HMS
 
@@ -317,6 +316,7 @@ sub parsedate
 	if ($tz) {
 		$tzadj = tz_offset($tz, $secs);
 		print "adjusting secs for $tz: $tzadj\n" if $debug;
+		$tzadj = tz_offset($tz, $secs-$tzadj);
 		$secs -= $tzadj;
 	} elsif (defined $tzo) {
 		print "adjusting time for offset: $tzo\n" if $debug;
@@ -325,11 +325,17 @@ sub parsedate
 		unless ($options{GMT}) {
 			if ($options{ZONE}) {
 				$tzadj = tz_offset($options{ZONE}, $secs);
+				$tzadj = tz_offset($options{ZONE}, $secs-$tzadj);
 				print "adjusting secs for $options{ZONE}: $tzadj\n" if $debug;
 				$secs -= $tzadj;
 			} else {
 				$tzadj = tz_local_offset($secs);
 				print "adjusting secs for local offset: $tzadj\n" if $debug;
+				# 
+				# Just in case we are very close to a time
+				# change...
+				#
+				$tzadj = tz_local_offset($secs-$tzadj);
 				$secs -= $tzadj;
 			}
 		}
@@ -578,7 +584,7 @@ sub parse_date_only
 		return 1;
 	} elsif ($$tr =~ s#^(?xi)
 			(\d+)
-			(?:st|nd|rd|th)
+			(?:st|nd|rd|th)?
 			\s+
 			(January|Jan|February|Feb|March|Mar|April|Apr|May|
 			    June|Jun|July|Jul|August|Aug|September|Sep|
@@ -748,8 +754,10 @@ sub monthoff
 	print "m11 = $m11 + $months, y = $y\n" if $debug;
 
 	$m11 += $months;
+
+	print "m11 = $m11, y = $y\n" if $debug;
 	if ($m11 > 11 || $m11 < 0) {
-		$y -= 1 if $m11 < 0;
+		$y -= 1 if $m11 < 0 && ($m11 % 12 != 0);
 		$y += int($m11/12);
 
 		# this is required to work around a bug in perl 5.003

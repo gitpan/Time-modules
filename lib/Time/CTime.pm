@@ -15,7 +15,7 @@ use strict;
 use vars qw(@DoW @DayOfWeek @MoY @MonthOfYear %strftime_conversion $VERSION);
 use vars qw($template $sec $min $hour $mday $mon $year $wday $yday $isdst);
 
-$VERSION = 96.032702;
+$VERSION = 98.06_09_01;
 
 CONFIG: {
     @DoW = 	   qw(Sun Mon Tue Wed Thu Fri Sat);
@@ -65,6 +65,7 @@ CONFIG: {
 
 sub asctime_n {
     my($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst, $TZname) = @_;
+    ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst, $TZname) = localtime($sec) unless defined $min;
     $year += ($year < 70) ? 2000 : 1900;
     $TZname .= ' ' 
 	if $TZname;
@@ -103,8 +104,9 @@ sub ctime_n {
 sub strftime {			
     local ($template, $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = @_;
 
+    undef $@;
     $template =~ s/%([%aAbBcdDehHIjklmMnopQrRStTUwWxXyYZ])/&{$Time::CTime::strftime_conversion{$1}}()/egs;
-    die $@ if ($@);
+    die $@ if $@;
     return $template;
 }
 

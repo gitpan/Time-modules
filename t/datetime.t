@@ -2,8 +2,6 @@
 
 # David Muir Sharnoff <muir@idiom.com>
 
-print "1..".($okat-1+scalar(keys %k)+scalar(keys %tztests)+@sdt/2)."\n";
-
 # find out why it died if not running under make
 
 $rerun = $ENV{'PERL_DL_NONLAZY'} ? 0 : 1; 
@@ -55,6 +53,7 @@ BEGIN {
 		'Z' =>	"PST"
 		);
 
+	$sdt_start_line = __LINE__+2;
 	@sdt = (
 		796969332, ['950404 00:22:12 "EDT'],
 		786437763, ['Fri Dec  2 22:56:03 1994', NOW => 785300000],
@@ -66,7 +65,7 @@ BEGIN {
 		786437760, ['12/02/94 22:56', NOW => 785300000],
 		786437760, ['12/2/94 10:56Pm', NOW => 785300000],
 		786437760, ['94/12/2 10:56 pm', NOW => 785300000],
-		786437763, ['94/12/02 22:56:03', NOW => 785300000],
+		786437763, ['94/12/02 22:56:03', NOW => 785300000],   
 		786437760, ['10:56Pm 94/12/02', NOW => 785300000],
 		786437763, ['22:56:03 1994/12/02', NOW => 785300000],
 		786437760, ['22:56 1994/12/2', NOW => 785300000],
@@ -76,7 +75,7 @@ BEGIN {
 		786437760, ['10:56Pm 94/12/02', NOW => 785300000],
 		796980132, ['Tue Apr 4 00:22:12 PDT 1995'],
 		796980132, ['April 4th 1995 12:22:12AM', ZONE => PDT],
-		827878812, ['Tue Mar 26 14:20:12 1996'],
+		827878812, ['Tue Mar 26 14:20:12 1996'],		
 		827878812, ['Tue Mar 26 14:20:12 GMT-0800 1996'],
 		827878812, ['Tue Mar 26 17:20:12 EST 1996'],
 		827878812, ['Tue Mar 26 17:20:12 GMT-0500 1996'],
@@ -145,7 +144,7 @@ BEGIN {
 		797062935, ['4 day +3 secs', ZONE => PDT, NOW => 796720932],
 		797062935, ['now + 4 days +3 secs', ZONE => PDT, NOW => 796720932],
 		797062935, ['now +4 days +3 secs', ZONE => PDT, NOW => 796720932],
-		796717332, ['now', ZONE => PDT, NOW => 796720932],
+		796720932, ['now', ZONE => PDT, NOW => 796720932],
 		796720936, ['now +4 secs', ZONE => PDT, NOW => 796720932],
 		796735332, ['now +4 hours', ZONE => PDT, NOW => 796720932],
 		797062935, ['+4 days +3 secs', ZONE => PDT, NOW => 796720932],
@@ -213,6 +212,13 @@ BEGIN {
 		202772100, ['5:35 pm june 4th 1976 EDT'],
 		796892400, ['04/03', NOW => 796980132, PREFER_PAST => 1],
 		765702000, ['04/07', NOW => 796980132, PREFER_PAST => 1],
+		883641600, ['1/1/1998'],
+		852105600, ['1/1/1997'],
+		852105600, ['last year', NOW => 883641600],
+		820483200, ['-2 years', NOW => 883641600],
+		832402800, ['-2 years', NOW => 895474800],
+		891864000, ['+3 days', NOW => 891608400],
+		891777600, ['+2 days', NOW => 891608400],
 		);
 
 	%tztests = (
@@ -232,8 +238,13 @@ use Time::ParseDate;
 use Time::Local;
 use Time::Timezone;
 
+my $before_big = $okat-1+scalar(keys %k)+scalar(keys %tztests);
+
+printf "1..%d\n", $before_big + @sdt/2;
+
 $etime = 785307957;
 
+eval " 1/0; ";  # tests a bug in ctime!
 $x = ctime($etime);
 print $x eq "Sat Nov 19 21:05:57 PST 1994\n" ? "ok 1\n" : "not ok 1\n";
 
@@ -330,6 +341,8 @@ while (@sdt) {
 				print "The parse...\n";
 				$Time::ParseDate::debug = 1;
 				&parsedate(@$ar, 'WHOLE' => 1);
+				printf "Test that failed was on line %d\n",	
+					$c-$before_big+$sdt_start_line-1;
 				exit(0);
 			}
 		}

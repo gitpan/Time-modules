@@ -5,7 +5,7 @@ use Carp;
 require 5.000;
 
 @ISA = qw(Exporter);
-@EXPORT = qw(days_in is_leapyear);
+@EXPORT = qw(days_in is_leap);
 @EXPORT_OK = qw(%mltable);
 
 use strict;
