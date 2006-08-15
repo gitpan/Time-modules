@@ -17,7 +17,7 @@ use strict;
 # constants
 use vars qw(%mtable %umult %wdays $VERSION);
 
-$VERSION = 2003.1126;
+$VERSION = 2006.0814;
 
 # globals
 use vars qw($debug); 
@@ -50,7 +50,8 @@ CONFIG:	{
 		min 60 minute 60
 		hour 3600
 		day 86400
-		week 604800 );
+		week 604800 
+		fortnight 1209600);
 	%wdays = qw(
 		sun 0 sunday 0
 		mon 1 monday 1
@@ -328,16 +329,13 @@ sub parsedate
 	}
 
 	$S += $rs if defined $rs;
-	$carry = int($S / 60);
-	my($frac) = $S - int($S);
-	$S = int($S);
-	$S %= 60;
-	$S += $frac;
+	$carry = int($S / 60) - ($S < 0 && $S % 60 && 1);
+	$S -= $carry * 60;
 	$M += $carry;
-	$carry = int($M / 60);
+	$carry = int($M / 60) - ($M < 0 && $M % 60 && 1);
 	$M %= 60;
 	$H += $carry;
-	$carry = int($H / 24);
+	$carry = int($H / 24) - ($H < 0 && $H % 24 && 1);
 	$H %= 24;
 	$jd += $carry;
 
@@ -355,9 +353,15 @@ sub parsedate
 	my $tzadj;
 	if ($tz) {
 		$tzadj = tz_offset($tz, $secs);
-		print "adjusting secs for $tz: $tzadj\n" if $debug;
-		$tzadj = tz_offset($tz, $secs-$tzadj);
-		$secs -= $tzadj;
+		if (defined $tzadj) {
+			print "adjusting secs for $tz: $tzadj\n" if $debug;
+			$tzadj = tz_offset($tz, $secs-$tzadj);
+			$secs -= $tzadj;
+		} else {
+			print "unknown timezone: $tz\n" if $debug;
+			undef $secs;
+			undef $t;
+		}
 	} elsif (defined $tzo) {
 		print "adjusting time for offset: $tzo\n" if $debug;
 		$secs -= $tzo;
@@ -751,27 +755,40 @@ sub parse_time_offset
 
 	return 0 if $options{NO_RELATIVE};
 
-	if ($$tr =~ s#^(?xi)
-			([-+]?)
+	if ($$tr =~ s{^(?xi)					
+			(?:
+				(-)				(?# 1)
+				|
+				[+]
+			)?
 			\s*
-			(\d+)
+			(?:
+				(\d+(?:\.\d+)?) 		(?# 2)
+				| 		
+				(?:(\d+)\s+(\d+)/(\d+))		(?# 3 4/5)
+			)
 			\s*
-			(sec|second|min|minute|hour)s?
+			(sec|second|min|minute|hour)s?		(?# 6)
 			(
 				\s+
-				ago
+				ago				(?# 7)
 			)?
 			(?:
 				\s+
 				|
 				$
 			)
-			##) {
+			}{}) {
 		# count units
 		$$rsr = 0 unless defined $$rsr;
-		$$rsr += $umult{"\L$3"} * "$1$2";
+		return 0 if defined($5) && $5 == 0;
+		my $num = defined($2)
+			? $2
+			: $3 + $4/$5;
+		$num = -$num if $1;
+		$$rsr += $umult{"\L$6"} * $num;
 
-		$$rsr = -$$rsr if $4 ||
+		$$rsr = -$$rsr if $7 ||
 			$$tr =~ /\b(day|mon|month|year)s?\s*ago\b/;
 		printf "matched at %d.\n", __LINE__ if $debug;
 		return 1;
@@ -1011,6 +1028,19 @@ sub parse_date_offset
 		printf "matched at %d.\n", __LINE__ if $debug;
 		return 1;
 	} elsif ($$tr =~ s#^(?xi)
+			(Mon|Tue|Wed|Thu|Fri|Sat|Sun|Monday|Tuesday
+				|Wednesday|Thursday|Friday|Saturday|Sunday)
+			\s+
+			before
+			\s+
+			last
+			(?: \s+ | $ )
+			##) {
+		# Dow "before last"
+		$$rdr = $wdays{"\L$1"} - $wday - ( $wdays{"\L$1"} < $wday ? 7 : 14);
+		printf "matched at %d.\n", __LINE__ if $debug;
+		return 1;
+	} elsif ($$tr =~ s#^(?xi)
 			next\s+
 			(Mon|Tue|Wed|Thu|Fri|Sat|Sun|Monday|Tuesday
 				|Wednesday|Thursday|Friday|Saturday|Sunday)
@@ -1102,7 +1132,7 @@ sub debug_display
 }
 1;
 
-__DATA__
+__END__
 
 =head1 NAME
 
@@ -1147,6 +1177,7 @@ Date parsing can also use options.  The options are as follows:
 	Month day{st,nd,rd,th}
 	Mon dd yyyy
 	yyyy/mm/dd
+	yyyy-mm-dd	(usually the best date specification syntax)
 	yyyy/mm
 	mm/dd/yy
 	mm/dd/yyyy
@@ -1164,6 +1195,7 @@ Date parsing can also use options.  The options are as follows:
 	count "months"
 	count "years"
 	Dow "after next"
+	Dow "before last"
 	Dow 			(requires PREFER_PAST or PREFER_FUTURE)
 	"next" Dow
 	"tomorrow"
@@ -1174,7 +1206,7 @@ Date parsing can also use options.  The options are as follows:
 	"now"
 	"now" "+" count units
 	"now" "-" count units
-	"+" count units
+	"+" count units		
 	"-" count units
 	count units "ago"
 
@@ -1190,7 +1222,7 @@ Date parsing can also use options.  The options are as follows:
 
 =head2 Relative time formats:
 
-	count "minutes"
+	count "minutes"		(count can be franctional "1.5" or "1 1/2")
 	count "seconds"
 	count "hours"
 	"+" count units
@@ -1238,6 +1270,7 @@ C<undef> and an error string.
 	$seconds = parsedate("+3 secs", NOW => 796978800);
 	$seconds = parsedate("2 months", NOW => 796720932);
 	$seconds = parsedate("last Tuesday");
+	$seconds = parsedate("Sunday before last");
 
 	($seconds, $remaining) = parsedate("today is the day");
 	($seconds, $error) = parsedate("today is", WHOLE=>1);
@@ -1248,7 +1281,7 @@ David Muir Sharnoff <muir@idiom.com>.
 
 =head1 LICENSE
 
-Copyright (C) 1996-1999 David Muir Sharnoff.  License hereby
+Copyright (C) 1996-2006 David Muir Sharnoff.  License hereby
 granted for anyone to use, modify or redistribute this module at
 their own risk.  Please feed useful changes back to muir@idiom.com.
 

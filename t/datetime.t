@@ -280,6 +280,16 @@ BEGIN {
 #ISO8601		729724230, ['19930214T131030', NOW => 796980132],
 		14400, ['+4 hours', NOW => 0],
 		345600, ['+4 days', NOW => 0],
+		957744000, ['Sunday before last', NOW => 958521600],
+		957139200, ['Sunday before last', NOW => 958348800],
+		796720930.5, ['1.5 second ago', WHOLE =>1.5, ZONE => PDT, NOW => 796720932],
+		796720930.5, ['1 1/2 second ago', WHOLE =>1.5, ZONE => PDT, NOW => 796720932],
+		5, ['5 seconds', UK => 1, NOW => 0],
+		6, ['5 seconds', UK => 1, NOW => 1],
+		1078876800, ['2004-03-10 00:00:00 GMT'],
+		1081551599, ['-1 second +1 month', NOW => 1078876800, ZONE => 'PDT'],
+		1081526399, ['-1 second +1 month', NOW => 1078876800, ZONE => 'GMT'],
+
 		);
 
 	%tztests = (

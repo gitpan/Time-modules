@@ -1,3 +1,17 @@
+2006.0814:
+	A bugfix for negative offsets that overflowed (from Vernon Lyon 
+	<vlyon at uk.yahoo-inc.com>)
+
+	Add a few more timezones (from Peter Ludemann <ludemann at yahoo-inc.com>
+	and Alex Bowley <kilinrax at cpan.org>)
+
+	Recognize fractional times counts like "1.5 minutes ago" 
+	(from Simon Wistow <simon@thegestalt.org>)
+
+	Recognize Dow "before last" (from Ole Craig <ocraig at stillsecure.com>)
+
+	Change various __DATA__ to __END__ (from Nick Ing-Simmons 
+	<nick at ing-simmons.net>)
 2003.1125:
 	Various folks have complained that JulianDay isn't correct.  An
 	errata section has been added to the documentation.

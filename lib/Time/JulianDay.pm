@@ -156,7 +156,7 @@ sub jd_timegm
 
 1;
 
-__DATA__
+__END__
 
 =head1 NAME
 
