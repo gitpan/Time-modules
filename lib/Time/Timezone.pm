@@ -330,7 +330,7 @@ C<tz_name()> determines the name of the timezone based on its offset
 =head1 AUTHORS
 
 Graham Barr <bodg@tiuk.ti.com>
-David Muir Sharnoff <muir@idiom.com>
+David Muir Sharnoff <muir@idiom.org>
 Paul Foley <paul@ascent.com>
 
 =head1 LICENSE

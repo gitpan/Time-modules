@@ -68,7 +68,7 @@ a month.  That's all it does.  Really!
 
 =head1 AUTHOR
 
-David Muir Sharnoff <muir@idiom.com>
+David Muir Sharnoff <muir@idiom.org>
 
 =head1 BUGS
 
@@ -79,5 +79,5 @@ historical time and date support.
 
 Copyright (C) 1996-1999 David Muir Sharnoff.  License hereby
 granted for anyone to use, modify or redistribute this module at
-their own risk.  Please feed useful changes back to muir@idiom.com.
+their own risk.  Please feed useful changes back to muir@idiom.org.
 
